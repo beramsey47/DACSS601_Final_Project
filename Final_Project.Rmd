@@ -91,7 +91,7 @@ ggplot(data = info, aes(y = `BB_9`, x = `P_type`, fill = "")) +
 t.test(sp$BB_9, rp$BB_9)
 ```
 
-Howdy
+There isn't a major difference for the home run rates for starters versus relievers, as both groups only give up around one home run per innings. There is no such thing as a tenth of a home run, which is what the difference looks to be like. As with the other plots, the starters are clustered around the median and the relievers are more spread out. It looks like relievers give up fewer home runs in general than starters, which makes sense given that any runs given up by a reliever are often in high leverage situations which determine the outcome of the game and that is what they're brought in to avoid. The two sample t-test does suggest a significant difference between the two groups. The t-score is 5.8365, the mean for starters is 1.09 and the mean for relievers is 0.96.
 
 ```{r}
 ggplot(data = info, aes(y = `HR_9`, x = `P_type`, fill = "")) +
@@ -143,3 +143,7 @@ cor(rp$R_9, rp$HR_9)
 
 cor(sp$R_9, sp$HR_9)
 ```
+
+# Reflection
+
+# Conclusion
