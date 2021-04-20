@@ -1,0 +1,143 @@
+---
+title: "Final Project"
+author: "Benjamin Ramsey"
+date: "3/16/2021"
+output: pdf_document
+---
+
+# Introduction
+
+I am a big baseball fan and I played baseball growing up. My favorite position to play was pitcher because of my propensity to throw things. I'm also interested in science, and over the past twenty or so years there has been a growing emphasis in sports on using analytic approaches to describe what is happening on the field. Sabermetrics, as it is known in baseball circles, has exploded in popularity among professional teams and mainstream acceptance has steadily increased. Every baseball stadium nowadays is equipped with cameras that track the movement of the players and the ball, which give us data like how far the fielders had to run to make a catch or how hard a ball was hit.
+
+I am primarily interested in what makes certain pitchers more effective than other pitchers. There are eight other players on the field besides the pitcher, and they play defense whenever the ball is put in play by the batter. However, there are certain plays where only the pitcher and batter are involved. They are known as the three true outcomes: walks, strikeouts, and home runs. Fielding independent pitching (FIP) is a statistic which only involves those variables, and is thought to be more indicative of a pitcher's skill than traditional statistics. Another way to determine a pitcher's skill is by looking at how many runs they give up. This does put defense back into the equation, but I chose to look at runs because the ultimate goal in a baseball game is to score more runs than your opponent and having a pitcher who limits the other team's scoring puts you in a better position to win the game. I wanted to see if there were any associations between a pitcher's walk rate ((Walks / Innings Pitched) \* 9) , strikeout rate ((Strikeouts / Innings Pitched) \* 9), home run rate ((Home Runs / Innings Pitched) \* 9) and the number of runs they give up per nine innings ((Runs Allowed / Innings Pitched) \* 9).
+
+I predict that a pitcher's home run rate and runs allowed will be strongly correlated, and that walk rate and runs allowed will also be strongly correlated. I predict that strikeout rate and runs allowed will not be as strongly correlated. A home run is automatically at least one run, which is why I think there will be a strong association between home run rate and runs allowed. Pitchers who walk a lot of batters generally have poor command of their pitches, which leads to pitches in the strike zone which batters are more likely to make contact with. Strikeouts are a good outcome for the pitcher, but don't indicate what happens when the batter doesn't strike out, which is why I think that strikeouts and runs allowed will not be as strongly correlated. My basic question is whether or not defense independent pitching metrics such as walks allowed and home runs allowed are related to defense dependent metrics such as runs allowed. If they are strongly correlated, it may suggest pitchers are more responsible for the runs they give up than the defense behind them.
+
+# Data
+
+I used the "baseballr" package to scrape data from FanGraphs, which is website focused on professional baseball analytics. The data are the pitching leader boards in Major League Baseball from the last ten years, for which players had to pitch at least 300 innings to qualify, so about 30 innings per year. The last ten years have seen an increase in home runs, walks and strikeouts, which is why I thought it would be interesting to look at as opposed to a different era.
+
+```{r}
+library(tidyverse)
+
+library(tinytex)
+
+library(baseballr)
+```
+
+This is how I got the data into R. "fg_pitch_leaders" is a function that comes with the "baseballr" package, and the arguments I gave it said to scrape the pitching leader boards from 2010 to 2020.
+
+```{r}
+dat <- as_tibble(fg_pitch_leaders(2010, 2020))
+```
+
+In baseball, there are basically two types of pitchers. Starters are generally the first pitcher to pitch in the game, and their job is to pitch most of the game, which in today's baseball environment means five to six out of the nine innings that make up the game. Relievers generally only pitch one or two innings at a time, and they are responsible for pitching until the end of the game. Because relievers pitch fewer innings than starters, their statistics are much more variable than the starters. As you'll see later in the data exploration, the starters' statistics are clustered more around the mean, whereas the relievers' statistics are more spread out. This makes sense, as smaller sample sizes are much more variable than bigger sample sizes. In this case, I defined starters as pitchers who started more than half of the games they appeared in and I defined relievers as pitchers who started less than half of the games they appeared in. Pitchers can switch from being primarily a reliever to primarily being a starter and vice versa, but the way I split pitchers up fits pretty well with how people think about who is a starter and who is a reliever. I did this for the previously mentioned reason that relievers have a smaller sample size than starters and are much more variable in their statistics. Lumping all of the pitchers into one big group would not accurately capture what makes a pitcher effective or not. I also calculated runs per nine innings, which is a statistic that measures how many runs a pitcher is responsible for and then turns it into a rate so we're not dealing with raw numbers.
+
+```{r}
+dat <- mutate(dat, "P_type" = case_when((`GS` / `G`) < .5 ~ "Reliever", (`GS` / `G`) > .5 ~ "Starter"))
+
+dat <- mutate(dat, "R_9" = (`R` / `IP`) * 9)
+```
+
+Next, I select the variables I'm interested in, which are pitcher type, runs per nine innings, strikeouts per nine innings, walks per nine innings, and home runs per nine innings. I also selected names to see if my pitcher type variable reflected how people perceive pitchers, and I believe it is accurate enough. There are 192 relievers in this particular data set and 271 starters. If you are a baseball fan, the first five names on the lists of relievers and starters will be of no surprise and they are inconsequential if you don't follow baseball closely. They are ordered by runs per nine innings.
+
+```{r}
+info <- select(dat, `Name`, `P_type`, `R_9`, `K_9`, `BB_9`, `HR_9`)
+
+count(info, `P_type`)
+
+sp <- filter(info, `P_type` == "Starter")
+
+rp <- filter(info, `P_type` == "Reliever")
+
+slice(sp, 1:5)
+
+slice(rp, 1:5)
+```
+
+The violin plot for runs per nine innings shows how the means and distribution differ between the starters and the relievers. The starters have a higher mean than the relievers, but the starters also have a much tighter spread than the relievers. The median for the starters is around 4.5, and the median for the relievers is around 4. Most of the starters are clustered around the mean, whereas the relievers are much more spread out, which is what I would have expected. To see if I was justified into splitting the pitchers into two groups, I decided to run a two sample t-test to compare the means. The test found that there is a significant difference between the group means, with a t-score of 6.287, which suggests that I am justified in splitting the pitchers up into these two groups. The mean for starters is 4.438, and the mean for relievers is 4.039, and the 95% confidence interval is between 0.274 and 0.524.
+
+```{r}
+ggplot(data = info, aes(y = `R_9`, x = `P_type`, fill = "")) +
+  geom_violin() +
+  labs(y = "Runs per 9 Innings", x = "Pitcher Type", fill = NULL) +
+  theme(panel.grid.major = element_line(color = "black"), panel.grid.minor = element_line(color = "black"), panel.background = element_rect(fill = "white"), axis.ticks = element_blank(), legend.position = "none") + 
+  coord_flip()
+
+t.test(sp$R_9, rp$R_9)
+```
+
+When it comes to strikeouts, relievers clearly strike out batters more often than starters. The violin plot shows a median of around 8 for relievers and around 7.5 for starters. Again, the relievers are much more spread out than the starters, and there is long right tail in the relievers data. The best relievers strike out a whole batter and a half per inning, whereas the best starters don't even strike out a batter and a quarter. Relievers only have to pitch for an inning or two, which allows them to throw as hard as they can, while the starters have to conserve their energy for the next few innings. It is also a very useful skill for relievers to be able to strike out a lot of hitters, because they are often coming into situations where there are runners on base and even allowing the ball to be put into play could allow a run to score. I did another two sample t-test to see if there truly was a difference between the two groups, and again the test suggested that there was. The t-score was -6.3115, and the two means were 7.57 for starters and 8.56 for relievers.
+
+```{r}
+ggplot(data = info, aes(y = `K_9`, x = `P_type`, fill = "")) +
+  geom_violin() +
+  labs(y = "Strikeouts per 9 Innings", x = "Pitcher Type", fill = NULL) +
+  theme(panel.grid.major = element_line(color = "black"), panel.grid.minor = element_line(color = "black"), panel.background = element_rect(fill = "white"), axis.ticks = element_blank(), legend.position = "none") + 
+  coord_flip()
+
+t.test(sp$K_9, rp$K_9)
+```
+
+Again, when it comes to walks, the starters are clustered around the median and the relievers are much more spread out. Walks are generally less dangerous for relievers than starters because they strike out more batters and the ball is put in play less often. There does appear to be less of a difference between starters and relievers, though. I did another two sample t-test to see if there was a significant difference between the groups, and again the test suggested that there was. The mean for starters is 2.908 and the mean for relievers is 3.148, and the t-score was -3.6466. I would have assumed that starters walk fewer batters than relievers, but the difference is not as big as the differences in runs allowed and strikeout rate are.
+
+```{r}
+ggplot(data = info, aes(y = `BB_9`, x = `P_type`, fill = "")) +
+  geom_violin() +
+  labs(y = "Walks per 9 Innings", x = "Pitcher Type", fill = NULL) +
+  theme(panel.grid.major = element_line(color = "black"), panel.grid.minor = element_line(color = "black"), panel.background = element_rect(fill = "white"), axis.ticks = element_blank(), legend.position = "none") + 
+  coord_flip()
+
+t.test(sp$BB_9, rp$BB_9)
+```
+
+```{r}
+ggplot(data = info, aes(y = `HR_9`, x = `P_type`, fill = "")) +
+  geom_violin() +
+  labs(y = "Home Runs per 9 Innings", x = "Pitcher Type", fill = NULL) +
+  theme(panel.grid.major = element_line(color = "black"), panel.grid.minor = element_line(color = "black"), panel.background = element_rect(fill = "white"), axis.ticks = element_blank(), legend.position = "none") + 
+  coord_flip()
+
+t.test(sp$HR_9, rp$HR_9)
+```
+
+# Visualization
+
+```{r}
+ggplot(data = info) +
+  geom_point(mapping = aes(`R_9`, `BB_9`)) +
+  geom_smooth(mapping = aes(`R_9`, `BB_9`), method = "lm", se = FALSE) +
+  facet_wrap(~ `P_type`, scales = "free") +
+  labs(x = "Runs per 9 Innings", y = "Walks per 9 Innings", colour = "Pitcher Type") +
+  theme_bw()
+
+cor(rp$R_9, rp$BB_9)
+
+cor(sp$R_9, sp$BB_9)
+```
+
+```{r}
+ggplot(data = info) +
+  geom_point(mapping = aes(`R_9`, `K_9`)) +
+  geom_smooth(mapping = aes(`R_9`, `K_9`), method = "lm", se = FALSE) +
+  facet_wrap(~ `P_type`, scales = "free") +
+  labs(x = "Runs per 9 Innings", y = "Strikeouts per 9 Innings", colour = "Pitcher Type") +
+  theme_bw()
+
+cor(rp$R_9, rp$K_9)
+
+cor(sp$R_9, sp$K_9)
+```
+
+```{r}
+ggplot(data = info) +
+  geom_point(mapping = aes(`R_9`, `HR_9`)) +
+  geom_smooth(mapping = aes(`R_9`, `HR_9`), method = "lm", se = FALSE) +
+  labs(x = "Runs per 9 Innings", y = "Home Runs per 9 Innings", colour = "Pitcher Type") +
+  theme_bw() +
+  facet_wrap(~ `P_type`, scales = "free") 
+
+cor(rp$R_9, rp$HR_9)
+
+cor(sp$R_9, sp$HR_9)
+```
