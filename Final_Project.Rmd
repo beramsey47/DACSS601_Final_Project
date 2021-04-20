@@ -91,6 +91,8 @@ ggplot(data = info, aes(y = `BB_9`, x = `P_type`, fill = "")) +
 t.test(sp$BB_9, rp$BB_9)
 ```
 
+Howdy
+
 ```{r}
 ggplot(data = info, aes(y = `HR_9`, x = `P_type`, fill = "")) +
   geom_violin() +
