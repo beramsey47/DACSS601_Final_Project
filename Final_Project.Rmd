@@ -105,6 +105,8 @@ t.test(sp$HR_9, rp$HR_9)
 
 # Visualization
 
+I decided to do a scatterplot comparing runs allowed with the other variables I was interested in because it would allow me to visualize the relationship between the variables and layer on a trend line. The scatterplot of runs allowed plotted against walks shows a very weak relationship for relievers and a somewhat stronger, although not terribly much more so, relationship for starters. It almost looks as if there is no relationship for relievers, and the linear model also shows an almost complete lack of relationship. It is very slightly positive, which is what I predicted, but I would have thought the relationship would have been stronger. The relationship for starters is more positive and stronger than relievers. I calculated the correlation coefficient for each group as well. The coefficient of determination for relievers is 0.017, and the coefficient of determination for starters is 0.121.
+
 ```{r}
 ggplot(data = info) +
   geom_point(mapping = aes(`R_9`, `BB_9`)) +
@@ -113,10 +115,12 @@ ggplot(data = info) +
   labs(x = "Runs per 9 Innings", y = "Walks per 9 Innings", colour = "Pitcher Type") +
   theme_bw()
 
-cor(rp$R_9, rp$BB_9)
+cor(rp$R_9, rp$BB_9) ^ 2
 
-cor(sp$R_9, sp$BB_9)
+cor(sp$R_9, sp$BB_9) ^ 2
 ```
+
+I did the same thing for runs allowed and strikeouts. The relationship for both groups appears much stronger and it is clearly negative, which is what I predicted. I didn't expect the relationship to be as quite as strong as it appears, and I calculated the coefficient of determination to be 0.2867 for relievers and 0.2475 for starters. That's a moderately strong relationship, and much stronger than the relationship between runs allowed and walks. 
 
 ```{r}
 ggplot(data = info) +
@@ -126,9 +130,9 @@ ggplot(data = info) +
   labs(x = "Runs per 9 Innings", y = "Strikeouts per 9 Innings", colour = "Pitcher Type") +
   theme_bw()
 
-cor(rp$R_9, rp$K_9)
+cor(rp$R_9, rp$K_9) ^ 2
 
-cor(sp$R_9, sp$K_9)
+cor(sp$R_9, sp$K_9) ^ 2
 ```
 
 ```{r}
@@ -139,11 +143,15 @@ ggplot(data = info) +
   theme_bw() +
   facet_wrap(~ `P_type`, scales = "free") 
 
-cor(rp$R_9, rp$HR_9)
+cor(rp$R_9, rp$HR_9) ^ 2
 
-cor(sp$R_9, sp$HR_9)
+cor(sp$R_9, sp$HR_9) ^ 2
 ```
 
 # Reflection
 
 # Conclusion
+
+# Bibliography
+
+
