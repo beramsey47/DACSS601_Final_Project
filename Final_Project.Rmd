@@ -134,6 +134,7 @@ cor(rp$R_9, rp$K_9) ^ 2
 
 cor(sp$R_9, sp$K_9) ^ 2
 ```
+The relationship between home runs allowed and runs allowed is also fairly strong, but this time the relationship is positive, as to be expected. The coefficient of determination for relievers is 0.256, and the coefficient of determination for starters is 0.241. I did not expect that strikeouts and home runs would have relationships of similar strength. 
 
 ```{r}
 ggplot(data = info) +
@@ -150,8 +151,16 @@ cor(sp$R_9, sp$HR_9) ^ 2
 
 # Reflection
 
+As I have said earlier, runs allowed is an imperfect metric for evaluating pitchers because it involves the defense, but I was more concerned with general trends around run prevention rather than evaluating pitcher performance. One thing that does matter quite a bit which I did not look at all is the quality of contact on a pitcher's pitches. My biggest surprise was that walks were very weakly correlated with the number of runs a pitcher gives up. More people on base generally leads to worse outcomes for pitchers, but maybe with the increase in strikeouts over the past ten years that has become less of an issue. I was also surprised that strikeouts had a relatively strong positive relationship with runs allowed. Strikeouts and quality of contact by batters are not generally seen as related, but maybe they are. I only looked at the past ten years of pitchers who qualified for the pitching leader boards, which disqualifies a lot of pitchers who only pitched in a few games or a few seasons. It is also not really a representative sample because I only looked at Major League Baseball, which is considered to be the baseball league with the highest skill level. It could be different in different leagues and different skill levels. There is a statistic called SIERA (Skill-Interactive Earned Run Average) which controls for types of hits given up by the pitcher and I could have looked into more. Other pitching statistics that control for are expected earned run average (xERA) and expected fielding independent pitching (xFIP). xFIP takes a pitcher's FIP and uses the league average home run rate instead of the pitcher's home run rate. xERA accounts for amount of contact and quality of contact and uses a lot of data that I didn't really want to get into.   
+
 # Conclusion
 
+My main research question was how metrics used to evaluate pitchers individually relate to the defensive aspects of a baseball team, which in this case I am using runs allowed as a metric. I found that strikeouts and home runs were moderately correlated with a team's ability to prevent runs, with about 25% of the variation in strikeouts and home runs explained by the variation in runs allowed. There was virtually no correlation between runs allowed and walks, which was very surprising to me. I expected pitchers who give up lots of runs would walk a lot of people because poor control of your pitches usually goes hand in hand with giving up lots of runs. 
+
 # Bibliography
+
+"baseballr" R package by Bill Petti (https://billpetti.github.io/baseballr/)
+
+fangraphs.com
 
 
