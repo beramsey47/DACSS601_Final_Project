@@ -109,10 +109,10 @@ I decided to do a scatterplot comparing runs allowed with the other variables I 
 
 ```{r}
 ggplot(data = info) +
-  geom_point(mapping = aes(`R_9`, `BB_9`)) +
-  geom_smooth(mapping = aes(`R_9`, `BB_9`), method = "lm", se = FALSE) +
+  geom_point(mapping = aes(x = `BB_9`, y = `R_9`)) +
+  geom_smooth(mapping = aes(`BB_9`, `R_9`), method = "lm", se = FALSE) +
   facet_wrap(~ `P_type`, scales = "free") +
-  labs(x = "Runs per 9 Innings", y = "Walks per 9 Innings", colour = "Pitcher Type") +
+  labs(y = "Runs per 9 Innings", x = "Walks per 9 Innings", colour = "Pitcher Type") +
   theme_bw()
 
 cor(rp$R_9, rp$BB_9) ^ 2
@@ -124,10 +124,10 @@ I did the same thing for runs allowed and strikeouts. The relationship for both 
 
 ```{r}
 ggplot(data = info) +
-  geom_point(mapping = aes(`R_9`, `K_9`)) +
-  geom_smooth(mapping = aes(`R_9`, `K_9`), method = "lm", se = FALSE) +
+  geom_point(mapping = aes(`K_9`, `R_9`)) +
+  geom_smooth(mapping = aes(`K_9`, `R_9`), method = "lm", se = FALSE) +
   facet_wrap(~ `P_type`, scales = "free") +
-  labs(x = "Runs per 9 Innings", y = "Strikeouts per 9 Innings", colour = "Pitcher Type") +
+  labs(y = "Runs per 9 Innings", x = "Strikeouts per 9 Innings", colour = "Pitcher Type") +
   theme_bw()
 
 cor(rp$R_9, rp$K_9) ^ 2
@@ -138,9 +138,9 @@ The relationship between home runs allowed and runs allowed is also fairly stron
 
 ```{r}
 ggplot(data = info) +
-  geom_point(mapping = aes(`R_9`, `HR_9`)) +
-  geom_smooth(mapping = aes(`R_9`, `HR_9`), method = "lm", se = FALSE) +
-  labs(x = "Runs per 9 Innings", y = "Home Runs per 9 Innings", colour = "Pitcher Type") +
+  geom_point(mapping = aes(`HR_9`, `R_9`)) +
+  geom_smooth(mapping = aes(`HR_9`, `R_9`), method = "lm", se = FALSE) +
+  labs(y = "Runs per 9 Innings", x = "Home Runs per 9 Innings", colour = "Pitcher Type") +
   theme_bw() +
   facet_wrap(~ `P_type`, scales = "free") 
 
@@ -151,7 +151,9 @@ cor(sp$R_9, sp$HR_9) ^ 2
 
 # Reflection
 
-As I have said earlier, runs allowed is an imperfect metric for evaluating pitchers because it involves the defense, but I was more concerned with general trends around run prevention rather than evaluating pitcher performance. One thing that does matter quite a bit which I did not look at all is the quality of contact on a pitcher's pitches. My biggest surprise was that walks were very weakly correlated with the number of runs a pitcher gives up. More people on base generally leads to worse outcomes for pitchers, but maybe with the increase in strikeouts over the past ten years that has become less of an issue. I was also surprised that strikeouts had a relatively strong positive relationship with runs allowed. Strikeouts and quality of contact by batters are not generally seen as related, but maybe they are. I only looked at the past ten years of pitchers who qualified for the pitching leader boards, which disqualifies a lot of pitchers who only pitched in a few games or a few seasons. It is also not really a representative sample because I only looked at Major League Baseball, which is considered to be the baseball league with the highest skill level. It could be different in different leagues and different skill levels. There is a statistic called SIERA (Skill-Interactive Earned Run Average) which controls for types of hits given up by the pitcher and I could have looked into more. Other pitching statistics that control for are expected earned run average (xERA) and expected fielding independent pitching (xFIP). xFIP takes a pitcher's FIP and uses the league average home run rate instead of the pitcher's home run rate. xERA accounts for amount of contact and quality of contact and uses a lot of data that I didn't really want to get into.   
+As I have said earlier, runs allowed is an imperfect metric for evaluating pitchers because it involves the defense, but I was more concerned with general trends around run prevention rather than evaluating pitcher performance. One thing that does matter quite a bit which I did not look at all is the quality of contact on a pitcher's pitches. My biggest surprise was that walks were very weakly correlated with the number of runs a pitcher gives up. More people on base generally leads to worse outcomes for pitchers, but maybe with the increase in strikeouts over the past ten years that has become less of an issue. I was also surprised that strikeouts had a relatively strong positive relationship with runs allowed. Strikeouts and quality of contact by batters are not generally seen as related, but maybe they are. 
+
+I only looked at the past ten years of pitchers who qualified for the pitching leader boards, which disqualifies a lot of pitchers who only pitched in a few games or a few seasons. It is also not really a representative sample because I only looked at Major League Baseball, which is considered to be the baseball league with the highest skill level. It could be different in different leagues and different skill levels. There is a statistic called SIERA (Skill-Interactive Earned Run Average) which controls for types of hits given up by the pitcher and I could have looked into more. Other pitching statistics that control for are expected earned run average (xERA) and expected fielding independent pitching (xFIP). xFIP takes a pitcher's FIP and uses the league average home run rate instead of the pitcher's home run rate. xERA accounts for amount of contact and quality of contact and uses a lot of data that I didn't really want to get into.   
 
 # Conclusion
 
@@ -161,6 +163,4 @@ My main research question was how metrics used to evaluate pitchers individually
 
 "baseballr" R package by Bill Petti (https://billpetti.github.io/baseballr/)
 
-fangraphs.com
-
-piffle
+Data from fangraphs.com
